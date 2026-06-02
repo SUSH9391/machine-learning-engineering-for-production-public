@@ -9,7 +9,7 @@ from pydantic import BaseModel, conlist
 app = FastAPI(title="Predicting Wine Class with batching")
 
 # Open classifier in global scope
-with open("models/wine-95.pkl", "rb") as file:
+with open("models/wine-95-fixed.pkl", "rb") as file:
     clf = pickle.load(file)
 #just to test git actions
 
@@ -23,3 +23,10 @@ def predict(wine: Wine):
     np_batches = np.array(batches)
     pred = clf.predict(np_batches).tolist()
     return {"Prediction": pred}
+
+def test_pipeline_and_scaler():
+    isPipeline = isinstance(clf, Pipeline)
+    assert isPipeline
+    if isPipeline:
+        firstStep = [v for v in clf.named_steps.values()][0]
+        assert isinstance(firstStep, StandardScaler)
